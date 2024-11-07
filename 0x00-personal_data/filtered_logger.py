@@ -34,10 +34,19 @@ fields from user_data.csv that are considered PII. PII_FIELDS can contain
 only 5 fields - choose the right list of fields that can are considered as
 “important” PIIs or information that you must hide in your logs. Use it to
 parameterize the formatter.
+
+4. Task 3:
+Implement a get_db function that returns a connector to the database
+(mysql.connector.connection.MySQLConnection object).
+ - Use the os module to obtain credentials from the environment
+ - Use the module mysql-connector-python to connect to the MySQL database
+   (pip3 install mysql-connector-python)
 """
 import re
+import os
 import logging
 from typing import List
+import mysql.connector
 
 
 # Define PII fields
@@ -91,3 +100,23 @@ def get_logger() -> logging.Logger:
     logger.adHandler(stream_handler)
 
     return logger
+
+
+def get_db():
+    """Returns a connector to the database
+    """
+    # Get db credentials from environment variable
+    db_user = os.getenv('PERSONAL_DATA_DB_USERNAME')
+    db_pass = os.getenv('PERSONAL_DATA_DB_PASSWORD')
+    db_host = os.getenv('PERSONAL_DATA_DB_HOST')
+    db_name = os.getenv('PERSONAL_DATA_DB_NAME')
+
+    # Connect to the database
+    conn = mysql.connector.connect(
+        user=db_user,
+        password=db_pass,
+        host=db_host,
+        database=db_name
+    )
+
+    return conn
