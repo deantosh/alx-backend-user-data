@@ -21,10 +21,27 @@ Implement the format method to filter values in incoming log records using
 filter_datum. Values for fields in fields should be filtered.
 DO NOT extrapolate FORMAT manually. The format method should be less than 5
 lines long.
+
+Task 2:
+
+Implement a get_logger function that takes no arguments and returns a
+logging.Logger object.
+The logger should be named "user_data" and only log up to logging.INFO level.
+It should not propagate messages to other loggers. It should have a
+StreamHandler with RedactingFormatter as formatter.
+Create a tuple PII_FIELDS constant at the root of the module containing the
+fields from user_data.csv that are considered PII. PII_FIELDS can contain
+only 5 fields - choose the right list of fields that can are considered as
+“important” PIIs or information that you must hide in your logs. Use it to
+parameterize the formatter.
 """
 import re
 import logging
 from typing import List
+
+
+# Define PII fields
+PII_FIELDS = ('name', 'email', 'phone', 'ssn', 'password')
 
 
 def filter_datum(fields: List[str], redaction: str,
@@ -56,3 +73,21 @@ class RedactingFormatter(logging.Formatter):
         record.msg = filter_datum(self.fields, self.REDACTION,
                                   record.msg, self.SEPARATOR)
         return super(RedactingFormatter, self).format(record)
+
+
+def get_logger() -> logging.Logger:
+    """Returns a logging.Logger object
+    """
+    logger = logging.getLogger("user_data")
+    logger.setLevel(logging.INFO)
+    logger.propagate = False
+
+    # Set up streamHandler with RedactingFormatter
+    stream_handler = logging.streamHandler()
+    formatter = RedactingFormatter(PII_FIELDS)
+    stream_handler.setFormatter(formatter)
+
+    # Add handler to the logger
+    logger.adHandler(stream_handler)
+
+    return logger
