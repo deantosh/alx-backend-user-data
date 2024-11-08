@@ -102,7 +102,7 @@ def get_logger() -> logging.Logger:
     return logger
 
 
-def get_db():
+def get_db() -> connection.MySQLConnection:
     """Returns a connector to the database
     """
     # Get db credentials from environment variable
@@ -120,3 +120,39 @@ def get_db():
     )
 
     return conn
+
+
+def main():
+    """Retrieves all rows in the User table
+    """
+    # Create the formatter
+    formatter = RedactingFormatter(fields=PII_FIELDS)
+
+    # Get the connection object
+    conn = get_db()
+    cursor = conn.cursor()
+
+    # Execute SQL queries
+    cursor.execute("SELECT * FROM users;")
+    rows = cursor.fetchall()
+
+    # Format the rows
+    for row in rows:
+        # Create a log record from the row
+        log_message = ', '.join(f"{field}={value}" for field, value in zip(
+            PII_FIELDS, row))
+
+        # Create a logging record
+        record = logging.LogRecord(
+            name="user_data", level=logging.INFO, pathname="", lineno=0,
+            msg=log_message, args=(), exc_info=None
+        )
+        print(formatter.format(record))
+
+    # Close database connection
+    cursor.close()
+    conn.close()
+
+
+if __name__ == "__main__":
+    main()
