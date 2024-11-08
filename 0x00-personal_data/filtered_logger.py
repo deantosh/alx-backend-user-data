@@ -56,7 +56,7 @@ PII_FIELDS = ('name', 'email', 'phone', 'ssn', 'password')
 
 def filter_datum(fields: List[str], redaction: str,
                  message: str, separator: str) -> str:
-    """Returns an obfuscated log message
+    """Filters a message and returns an obfuscated log message
     """
     obs_message = message
     for field in fields:
@@ -76,10 +76,12 @@ class RedactingFormatter(logging.Formatter):
     SEPARATOR = ";"
 
     def __init__(self, fields: List[str]):
+        """Initialize class"""
         super(RedactingFormatter, self).__init__(self.FORMAT)
         self.fields = fields
 
     def format(self, record: logging.LogRecord) -> str:
+        """Formats the log record based on the FORMATTER variable"""
         record.msg = filter_datum(self.fields, self.REDACTION,
                                   record.msg, self.SEPARATOR)
         return super(RedactingFormatter, self).format(record)
@@ -88,6 +90,7 @@ class RedactingFormatter(logging.Formatter):
 def get_logger() -> logging.Logger:
     """Returns a logging.Logger object
     """
+    # Get and configure a logger object
     logger = logging.getLogger("user_data")
     logger.setLevel(logging.INFO)
     logger.propagate = False
@@ -98,7 +101,7 @@ def get_logger() -> logging.Logger:
     stream_handler.setFormatter(formatter)
 
     # Add handler to the logger
-    logger.adHandler(stream_handler)
+    logger.addHandler(stream_handler)
 
     return logger
 
@@ -126,8 +129,9 @@ def get_db() -> connection.MySQLConnection:
 def main():
     """Retrieves all rows in the User table
     """
-    # Create the formatter
-    formatter = RedactingFormatter(fields=PII_FIELDS)
+    # Defines column names explicitly
+    columns = ['name', 'email', 'phone', 'ssn', 'password',
+               'ip', 'last_login', 'user_agent']
 
     # Get the connection object
     conn = get_db()
@@ -140,14 +144,17 @@ def main():
     # Format the rows
     for row in rows:
         # Create a log record from the row
-        log_message = ', '.join(f"{field}={value}" for field, value in zip(
-            PII_FIELDS, row))
+        log_message = '; '.join(
+            f"{field}={value}" for field, value in zip(columns, row))
 
         # Create a logging record
         record = logging.LogRecord(
             name="user_data", level=logging.INFO, pathname="", lineno=0,
             msg=log_message, args=(), exc_info=None
         )
+
+        # Format the log record
+        formatter = RedactingFormatter(PII_FIELDS)
         print(formatter.format(record))
 
     # Close database connection
