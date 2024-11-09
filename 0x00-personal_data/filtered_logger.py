@@ -115,9 +115,9 @@ def get_db() -> connection.MySQLConnection:
     """Returns a connector to the database
     """
     # Get db credentials from environment variable
-    db_user = os.getenv('PERSONAL_DATA_DB_USERNAME')
-    db_pass = os.getenv('PERSONAL_DATA_DB_PASSWORD')
-    db_host = os.getenv('PERSONAL_DATA_DB_HOST')
+    db_user = os.getenv('PERSONAL_DATA_DB_USERNAME', default='root')
+    db_pass = os.getenv('PERSONAL_DATA_DB_PASSWORD', default='')
+    db_host = os.getenv('PERSONAL_DATA_DB_HOST', default='localhost')
     db_name = os.getenv('PERSONAL_DATA_DB_NAME')
 
     # Connect to the database
