@@ -59,12 +59,12 @@ def filter_datum(fields: List[str], redaction: str,
     """Filters a message and returns an obfuscated log message
     """
     obs_message = message
-    
+
     for field in fields:
-        pattern = r"({}=.*?(?={}|$)".format(
+        pattern = r"({}=).*?(?={}|$)".format(
             re.escape(field), re.escape(separator)
         )
-        obs_message = re.sub(pattern,  r"\1" + redaction + separator,
+        obs_message = re.sub(pattern, r"\1" + redaction,
                              obs_message)
     return obs_message
 
@@ -149,7 +149,6 @@ def main():
     headers = [field[0] for field in cursor.description]
     # Format the rows
     for row in rows:
-        print(f"Row is: {row}")
         # Create a log record from the row
         log_message = '; '.join(
             f"{field}={value}" for field, value in zip(headers, row))
