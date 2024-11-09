@@ -22,6 +22,6 @@ def hash_password(name: str) -> bytes:
 
     # Generate salt and hash the password
     salt = bcrypt.gensalt()
-    hash_password = bcrypt.hashpw(password, salt)
+    hashed_password = bcrypt.hashpw(password, salt)
 
-    return hash_password
+    return hashed_password
