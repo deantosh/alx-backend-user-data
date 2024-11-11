@@ -31,3 +31,10 @@ def not_authorized():
     """ Test unauthorized errror handler
     """
     abort(401)
+
+
+@app_views.route('/forbidden', strict_slashes=False)
+def access_forbidden():
+    """ Test forbidden error handler
+    """
+    abort(403)
