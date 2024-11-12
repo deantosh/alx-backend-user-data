@@ -14,6 +14,32 @@ app.register_blueprint(app_views)
 CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
 
 
+auth = os.getenv('AUTH_TYPE', None)
+if auth:
+    from api.v1.auth.auth import Auth
+    auth = Auth()
+
+
+@app.before_request
+def filter_each_request():
+    """Filters each request in application"""
+    excluded_paths = ['/api/v1/status/', '/api/v1/unauthorized/',
+                    '/api/v1/forbidden/']
+    if auth is None:
+        return
+
+    # If in excluded paths - no authentication needed
+    if not auth.require_auth(request.path, excluded_paths):
+        return
+
+    # If authorization header not provided
+    if auth.authorization_header(request) is None:
+        abort(401)
+
+    # Check if user is valid
+    if auth.current_user(request) is None:
+        abort(403)
+
 @app.errorhandler(401)
 def not_authorized(error) -> str:
     """ Unauthorized access
