@@ -26,7 +26,7 @@ class Auth:
         return True
 
     def authorization_header(self, request=None) -> str:
-        """Not implemented"""
+        """Returns the Authorization header"""
         if request is None:
             return None
         if 'Authorization' not in request.headers:
