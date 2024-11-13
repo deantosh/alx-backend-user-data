@@ -100,10 +100,11 @@ class BasicAuth(Auth):
             return None
 
         # Get user credentials
-        user_details = self.extract_user_credentials(base64_str)
-        user_email, user_pwd = user_details  # unpack tuple
+        user_email, user_pwd = self.extract_user_credentials(base64_str)
+        if user_email is None or user_pwd is None:
+            return None
 
         # Get user objec from credentials
-        user = user_object_from_credentials(user_email, user_pwd)
+        user = self.user_object_from_credentials(user_email, user_pwd)
 
         return user
