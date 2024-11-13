@@ -55,7 +55,7 @@ class BasicAuth(Auth):
             return (None, None)
 
         # Extract user email and password from string
-        email, password = decoded_base64_authorization_header.split(':')
+        email, password = decoded_base64_authorization_header.split(':', 1)
 
         return (email, password)
 
