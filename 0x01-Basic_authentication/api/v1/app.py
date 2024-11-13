@@ -26,8 +26,9 @@ else:
 @app.before_request
 def filter_each_request():
     """Filters each request in application"""
-    excluded_paths = ['/api/v1/status/', '/api/v1/unauthorized/',
-                    '/api/v1/forbidden/']
+    excluded_paths = [
+        '/api/v1/status/', '/api/v1/unauthorized/', '/api/v1/forbidden/']
+
     if auth is None:
         return
 
@@ -43,11 +44,13 @@ def filter_each_request():
     if auth.current_user(request) is None:
         abort(403)
 
+
 @app.errorhandler(401)
 def not_authorized(error) -> str:
     """ Unauthorized access
     """
     return jsonify({"error": "Unauthorized"}), 401
+
 
 @app.errorhandler(404)
 def not_found(error) -> str:
