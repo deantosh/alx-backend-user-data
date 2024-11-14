@@ -44,12 +44,9 @@ def filter_each_request():
     if not auth.require_auth(request.path, excluded_paths):
         return
 
-    # If authorization header not provided
-    if auth.authorization_header(request) is None:
-        abort(401)
-
     # Check if both header and session cookie is None
-    if auth.authorization_header(request) is None and session_cookie(
+    if auth.authorization_header(
+            request) is None and auth.session_cookie(
             request) is None:
         abort(401)
 
