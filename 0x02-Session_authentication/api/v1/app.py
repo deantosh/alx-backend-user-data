@@ -31,7 +31,11 @@ else:
 def filter_each_request():
     """Filters each request in application"""
     excluded_paths = [
-        '/api/v1/status/', '/api/v1/unauthorized/', '/api/v1/forbidden/']
+        '/api/v1/status/',
+        '/api/v1/unauthorized/',
+        '/api/v1/forbidden/',
+        '/api/v1/auth_session/login/'
+    ]
 
     if auth is None:
         return
@@ -42,6 +46,11 @@ def filter_each_request():
 
     # If authorization header not provided
     if auth.authorization_header(request) is None:
+        abort(401)
+
+    # Check if both header and session cookie is None
+    if auth.authorization_header(request) is None and session_cookie(
+            request) is None:
         abort(401)
 
     # Check if user is valid
