@@ -3,6 +3,7 @@
 Module defines a class SessionAuth that inherits from Auth.
 """
 import uuid
+from models.user import User
 from api.v1.auth.auth import Auth
 
 
@@ -33,3 +34,16 @@ class SessionAuth(Auth):
             return None
 
         return self.user_id_by_session_id.get(session_id)
+
+    def current_user(self, request=None):
+        """Returns a User instance based on a cookie value"""
+        if request is None:
+            return None
+
+        # Get session id from cookie
+        session_id = self.session_cookie(request)
+
+        # Retrieve user id usinf session id
+        user_id = self.user_id_for_session_id(session_id)
+
+        return User.get(user_id)
