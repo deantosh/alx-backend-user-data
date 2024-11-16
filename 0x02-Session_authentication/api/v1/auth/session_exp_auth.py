@@ -11,7 +11,7 @@ class SessionExpAuth(SessionAuth):
     def __init__(self):
         """Initializes class"""
         try:
-            duration = int(os.getenv('SESSION_DURATION'))
+            duration = int(os.getenv('SESSION_DURATION', '0'))
         except ValueError:
             duration = 0
 
@@ -50,7 +50,7 @@ class SessionExpAuth(SessionAuth):
         session_dict = self.user_id_by_session_id[session_id]
 
         # Session logic does not apply to this
-        if self.session_duration is None or self.session_duration <= 0:
+        if self.session_duration <= 0:
             return session_dict.get('user_id')
 
         if 'created_at' not in session_dict:
