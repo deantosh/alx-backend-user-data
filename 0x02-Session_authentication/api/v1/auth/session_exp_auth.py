@@ -2,15 +2,20 @@
 """Module for class SessionExpAuth
 """
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 from api.v1.auth.session_auth import SessionAuth
 
 
 class SessionExpAuth(SessionAuth):
     """Defines a class that adds an expiration date to SessionID"""
-    def __ini__(self):
+    def __init__(self):
         """Initializes class"""
-        self.session_duration = os.getenv('SESSION_DURATION', 0)
+        try:
+            duration = int(os.getenv('SESSION_DURATION'))
+        except ValueError:
+            duration = 0
+
+        self.session_duration = duration
 
     def create_session(self, user_id=None):
         """Overrides parent method - Add created_atas value of
@@ -20,7 +25,7 @@ class SessionExpAuth(SessionAuth):
         if session_id is None:
             return None
 
-        # Add session
+        # Replace session id value with new dict
         self.user_id_by_session_id[session_id] = {
             'user_id': user_id,
             'created_at': datetime.now()
@@ -29,7 +34,12 @@ class SessionExpAuth(SessionAuth):
         return session_id
 
     def user_id_for_session_id(self, session_id=None):
-        """ """
+        """Before searching for  user_id using session_id check for
+           Expiration of that session user.
+           Return:
+                   None:     If session expired
+                   user_id:  If session is active and user  is valid
+        """
         if session_id is None:
             return None
 
@@ -39,13 +49,14 @@ class SessionExpAuth(SessionAuth):
         # Get session dictionary
         session_dict = self.user_id_by_session_id[session_id]
 
+        # Session logic does not apply to this
         if self.session_duration <= 0:
             return session_dict.get('user_id')
 
-        if 'created_key' not in session_dict:
+        if 'created_at' not in session_dict:
             return None
 
-        # Check if the session has expired
+        # Check if the session has exspired
         created_at = session_dict.get('created_at')
         if not isinstance(created_at, datetime):
             return None
@@ -55,4 +66,4 @@ class SessionExpAuth(SessionAuth):
         if expiry_time < datetime.now():
             return None
 
-        returm session_dict.get('user_id')
+        return session_dict.get('user_id')
