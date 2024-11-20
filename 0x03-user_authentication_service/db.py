@@ -43,9 +43,9 @@ class DB:
 
         return user
 
-    def find_user_by(**kwargs: Any) -> User:
+    def find_user_by(self, **kwargs: Any) -> User:
         """Searches for user based on its attributes"""
-        user = self.__session.query(User).filter_by(kwargs).one()
+        user = self._session.query(User).filter_by(**kwargs).one()
         return user
 
     def update_user(self, user_id: int, **kwargs: Any) -> None:
@@ -57,7 +57,7 @@ class DB:
                 raise ValueError  # raise an exception
 
         # Update user record
-        self.__session.query(User).filter_by(id=user_id).update(kwargs)
+        self._session.query(User).filter_by(id=user_id).update(**kwargs)
 
         # Commit changes to db
-        self.__session.commit()
+        self._session.commit()
