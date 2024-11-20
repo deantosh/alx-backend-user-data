@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """DB module
 """
 from sqlalchemy import create_engine
@@ -6,6 +7,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
 from user import User
 from user import Base
+from typing import Any
 
 
 class DB:
@@ -40,3 +42,22 @@ class DB:
         self._session.commit()
 
         return user
+
+    def find_user_by(**kwargs: Any) -> User:
+        """Searches for user based on its attributes"""
+        user = self.__session.query(User).filter_by(kwargs).one()
+        return user
+
+    def update_user(user_id: int, **kwargs: Any) -> None:
+        """Updates a specified user attributes"""
+        # Raise a ValueError if argument not in user attributes
+        valid_columns = User.__table__.columns.keys()
+        for key in kwargs:
+            if key not in valid_columns:
+                raise ValueError  # raise an exception
+
+        # Update user record
+        self.__session.query(User).filter_by(id=user_id).update(kwargs)
+
+        # Commit changes to db
+        self.__session.commit()
