@@ -3,6 +3,7 @@
 Module defines methods used in user authentication system.
 """
 import bcrypt
+import uuid
 from db import DB
 from user import User
 from sqlalchemy.orm.exc import NoResultFound
@@ -19,6 +20,11 @@ def _hash_password(password: str) -> bytes:
     hashed_password = bcrypt.hashpw(b_password, salt)
 
     return hashed_password
+
+
+def _generate_uuid():
+    """'Generate user id"""
+    return uuid.uuid4()
 
 
 class Auth:
