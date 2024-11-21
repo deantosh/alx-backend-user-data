@@ -57,7 +57,7 @@ class DB:
                 raise ValueError  # raise an exception
 
         # Update user record
-        self._session.query(User).filter_by(id=user_id).update(**kwargs)
+        self._session.query(User).filter_by(id=user_id).update(kwargs)
 
         # Commit changes to db
         self._session.commit()
