@@ -58,7 +58,7 @@ def login():
 
 
 @app.route("/sessions", methods=["DELETE"], strict_slashes=False)
-def logout_user():
+def logout():
     """Logout user"""
     # Get session id from cookie
     session_id = request.cookies.get('session_id')
