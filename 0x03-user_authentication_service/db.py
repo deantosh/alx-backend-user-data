@@ -43,7 +43,7 @@ class DB:
 
         return user
 
-    def find_user_by(self, **kwargs: Any) -> User:
+    def find_user_by(self, **kwargs) -> User:
         """Searches for user based on its attributes"""
         user = self._session.query(User).filter_by(**kwargs).one()
         return user
