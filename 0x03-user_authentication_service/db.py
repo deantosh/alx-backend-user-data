@@ -48,7 +48,7 @@ class DB:
         user = self._session.query(User).filter_by(**kwargs).one()
         return user
 
-    def update_user(self, user_id: int, **kwargs: Any) -> None:
+    def update_user(self, user_id: int, **kwargs) -> None:
         """Updates a specified user attributes"""
         # Raise a ValueError if argument not in user attributes
         valid_columns = User.__table__.columns.keys()
